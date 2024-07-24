@@ -24,10 +24,8 @@ class TrainSet(Dataset):
                 self.x_y_pairs.append((x, y))
 
     def __getitem__(self, index):
-        x, y = self.x_y_pairs[index]
-        x = torch.tensor(x, dtype=torch.float32)
-        y = torch.tensor(y, dtype=torch.float32)
-        return x, y
+        data = self.x_y_pairs[index]
+        return data
 
     def __len__(self):
         return len(self.x_y_pairs)
