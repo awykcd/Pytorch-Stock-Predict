@@ -13,27 +13,25 @@ from tqdm import tqdm
 
 df = pd.read_csv('dataset/dataset_train_clean.csv', index_col=0, encoding="gbk")
 
-
 LR = 0.0001
-EPOCH = 1000
-TRAIN_END = -300
-DAYS_BEFORE = 30
-DAYS_PRED = 7
+split_ratio = 0.8
 
 # 创建 dataloader
 train_set = TrainSet(df)
+
 # 划分数据
-split_ratio = 0.8
 split_idx = int(len(train_set) * split_ratio)
 train_data = train_set[:split_idx]
 val_data = train_set[split_idx:]
 train_loader = DataLoader(train_data, batch_size=1024, shuffle=True)
 val_loader = DataLoader(val_data, batch_size=1024, shuffle=True)
+print("Dataset have been loaded")
 
 model = LSTM()
 
 if torch.cuda.is_available():
     model = model.cuda()
+    print("Cuda is available")
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)  # optimize all cnn parameters
 loss_func = nn.MSELoss()
@@ -48,16 +46,18 @@ best_loss = float('inf')
 
 # 检查并加载模型
 model_path = 'weights/model_best.pth'
-if torch.path.exists(model_path):
+if os.path.isfile(model_path):
     checkpoint = torch.load(model_path)
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     best_loss = checkpoint['best_loss']
     start_epoch = checkpoint['epoch']
+    print("Training continue from epoch{}".format(start_epoch))
 else:
     start_epoch = 0
+    print("New training")
 
-EPOCH = 10  # 假设总训练轮次
+EPOCH = 10 # 假设总训练轮次
 
 for step in tqdm(range(start_epoch, EPOCH), desc='Epoch'):
     train_loss_sum = 0.0

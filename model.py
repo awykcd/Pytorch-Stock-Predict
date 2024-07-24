@@ -13,11 +13,11 @@ class LSTM(nn.Module):
 
         # 修改输出层以预测未来 5 个时间步
         self.out = nn.Sequential(
-            nn.Linear(128, 6)  # 将隐藏层的输出映射到 6 个特征
+            nn.Linear(128, 1)  # 将隐藏层的输出映射到 6 个特征
         )
 
     def forward(self, x):
-        # x 的尺寸为 [256, 30, 6]
+        # x 的尺寸为 [1024, 30, 6]
         r_out, (h_n, h_c) = self.lstm(x)  # 输入 x 到 LSTM
         # 我们需要预测未来 5 个时间步，因此我们需要修改 r_out 的尺寸
         # 将最后一个时间步的输出作为序列的初始状态
